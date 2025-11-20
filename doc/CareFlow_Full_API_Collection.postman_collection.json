@@ -1,0 +1,294 @@
+{
+  "info": {
+    "_postman_id": "b9b1c2b8-6a1a-4d4a-9a3d-9a2d2e2f0c10",
+    "name": "CareFlow EHR API (Full)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Comprehensive collection for CareFlow EHR APIs with deterministic test data. Uses environment variables for baseUrl and tokens."
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "doctorId1", "value": "" },
+    { "key": "patientId1", "value": "" },
+    { "key": "appointmentId1", "value": "" }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Attach Authorization header if accessToken is present",
+          "const token = pm.environment.get('accessToken') || pm.collectionVariables.get('accessToken');",
+          "if (token) { pm.request.headers.upsert({ key: 'Authorization', value: `Bearer ${token}` }); }"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Data (Bulk Seed Helpers)",
+      "item": [
+        {
+          "name": "Admin Login",
+          "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/auth/login", "host":["{{baseUrl}}"], "path":["auth","login"] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@careflow.local\",\n  \"password\": \"admin123\"\n}" } },
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.response.to.have.status(200); const j=pm.response.json(); pm.environment.set('accessToken', j.data.accessToken);"]}}]
+        },
+        {
+          "name": "Secretary Login",
+          "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/auth/login", "host":["{{baseUrl}}"], "path":["auth","login"] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"secretary1@careflow.local\",\n  \"password\": \"Staff123!\"\n}" } }
+        },
+        {
+          "name": "List Doctors (public)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/home/doctors", "host":["{{baseUrl}}"], "path":["home","doctors"] } },
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["const data=pm.response.json().data; if (data && data[0]) pm.environment.set('firstDoctorId', data[0].id);"]}}]
+        },
+        {
+          "name": "List Patients (Secretary)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/secretary/patients?q=Patient", "host":["{{baseUrl}}"], "path":["secretary","patients"], "query":[{"key":"q","value":"Patient"}] } },
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["const data=pm.response.json().data; if (data && data[0]) pm.environment.set('firstPatientUserId', data[0].user.id || data[0].user._id);"]}}]
+        },
+        {
+          "name": "List Appointments (Secretary)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/secretary/appointments?page=1&perPage=10", "host":["{{baseUrl}}"], "path":["secretary","appointments"], "query":[{"key":"page","value":"1"},{"key":"perPage","value":"10"}] } },
+          "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.response.to.have.status(200);"]}}]
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Patient",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth","register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Patient Demo\",\n  \"email\": \"patient.demo@careflow.local\",\n  \"password\": \"Patient123!\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login as Admin",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth","login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@careflow.local\",\n  \"password\": \"admin123\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login success', function () { pm.response.to.have.status(200); });",
+                  "const json = pm.response.json();",
+                  "pm.environment.set('accessToken', json.data.accessToken);",
+                  "pm.environment.set('refreshToken', json.data.refreshToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login as Doctor 1",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth","login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"doctor1@careflow.local\",\n  \"password\": \"Staff123!\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200);",
+            "const json = pm.response.json(); pm.environment.set('accessToken', json.data.accessToken); pm.environment.set('refreshToken', json.data.refreshToken);"
+          ]}}]
+        },
+        {
+          "name": "Login as Patient 1",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth","login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"patient1@careflow.local\",\n  \"password\": \"Patient123!\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200);",
+            "const json = pm.response.json(); pm.environment.set('accessToken', json.data.accessToken); pm.environment.set('refreshToken', json.data.refreshToken);"
+          ]}}]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth","refresh"] },
+            "body": { "mode": "raw", "raw": "{}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200);",
+            "const json = pm.response.json(); if (json.data && json.data.accessToken) pm.environment.set('accessToken', json.data.accessToken);"
+          ]}}]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth","logout"] }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200);",
+            "pm.environment.unset('accessToken'); pm.environment.unset('refreshToken');"
+          ]}}]
+        }
+      ]
+    },
+    {
+      "name": "Home (Public)",
+      "item": [
+        {
+          "name": "List Doctors",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/home/doctors", "host": ["{{baseUrl}}"], "path": ["home","doctors"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200);",
+            "const docs = pm.response.json().data; if (docs && docs[0]) pm.collectionVariables.set('publicDoctorId', docs[0].id);"
+          ]}}]
+        },
+        {
+          "name": "Doctor Availability (Public)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/home/doctors/{{publicDoctorId}}/availability?date=2025-11-10", "host": ["{{baseUrl}}"], "path": ["home","doctors","{{publicDoctorId}}","availability"], "query": [{"key":"date","value":"2025-11-10"}] } }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Ensure Admin Login",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth","login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@careflow.local\",\n  \"password\": \"admin123\"\n}" }
+          },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200); const json = pm.response.json(); pm.environment.set('accessToken', json.data.accessToken);"
+          ]}}]
+        },
+        {
+          "name": "Create Role",
+          "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/admin/roles", "host":["{{baseUrl}}"], "path":["admin","roles"] }, "body": { "mode": "raw", "raw": "{\n  \"name\": \"TestRole\",\n  \"description\": \"Temporary role\",\n  \"permissions\": [\"read:user\"]\n}" } }
+        },
+        {
+          "name": "List Roles",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/roles", "host":["{{baseUrl}}"], "path":["admin","roles"] } }
+        },
+        {
+          "name": "Create User (Doctor)",
+          "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/admin/users", "host":["{{baseUrl}}"], "path":["admin","users"] }, "body": { "mode": "raw", "raw": "{\n  \"fullName\": \"Dr. Test Admin-Created\",\n  \"email\": \"doctor.admin.created@careflow.local\",\n  \"roleName\": \"Doctor\",\n  \"profileData\": { \"specialization\": \"General Medicine\" }\n}" } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "const json = pm.response.json(); if (json.data && json.data.user) pm.environment.set('adminCreatedUserId', json.data.user.id);"
+          ]}}]
+        },
+        {
+          "name": "List Users (paged)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/admin/users?page=1&perPage=10", "host":["{{baseUrl}}"], "path":["admin","users"], "query":[{"key":"page","value":"1"},{"key":"perPage","value":"10"}] } }
+        }
+      ]
+    },
+    {
+      "name": "Patient",
+      "item": [
+        {
+          "name": "Login as Patient 1",
+          "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/auth/login", "host":["{{baseUrl}}"], "path":["auth","login"] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"patient1@careflow.local\",\n  \"password\": \"Patient123!\"\n}" } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200); const j = pm.response.json(); pm.environment.set('accessToken', j.data.accessToken);"
+          ]}}]
+        },
+        {
+          "name": "Select Doctor (Public)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/home/doctors", "host":["{{baseUrl}}"], "path":["home","doctors"] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200); const docs = pm.response.json().data; pm.test('Doctors present', function(){ pm.expect(docs.length).to.be.above(0);}); pm.environment.set('patientDoctorId', docs[0].id);"
+          ]}}]
+        },
+        {
+          "name": "Get Available Slots (by doctor/date)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/patient/appointments/available?doctorId={{patientDoctorId}}&date={{availDate}}", "host":["{{baseUrl}}"], "path":["patient","appointments","available"], "query":[{"key":"doctorId","value":"{{patientDoctorId}}"},{"key":"date","value":"{{availDate}}"}] } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(200); const data = pm.response.json().data; pm.test('Slots array exists', function(){ pm.expect(Array.isArray(data.availableSlots)).to.be.true;}); const idx = parseInt(pm.environment.get('slotIndex')||'0',10)||0; if (data.availableSlots && data.availableSlots[idx]) { pm.environment.set('slotStart', data.availableSlots[idx].start); pm.environment.set('slotEnd', data.availableSlots[idx].end);} else { pm.environment.unset('slotStart'); pm.environment.unset('slotEnd'); }"
+          ]}}]
+        },
+        {
+          "name": "Create My Appointment (uses selected slot)",
+          "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/patient/appointments", "host":["{{baseUrl}}"], "path":["patient","appointments"] }, "body": { "mode": "raw", "raw": "{\n  \"doctorId\": \"{{patientDoctorId}}\",\n  \"startTime\": \"{{slotStart}}\",\n  \"endTime\": \"{{slotEnd}}\",\n  \"reason\": \"Routine check\"\n}" } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+            "pm.response.to.have.status(201); const json = pm.response.json(); pm.environment.set('appointmentId1', json.data.id || (json.data._id && json.data._id.toString()) ); pm.test('Start matches slot', function(){ pm.expect(json.data.startTime).to.eql(pm.environment.get('slotStart')); }); pm.test('End matches slot', function(){ pm.expect(json.data.endTime).to.eql(pm.environment.get('slotEnd')); });"
+          ]}}]
+        },
+        { "name": "My Appointments", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/patient/appointments", "host":["{{baseUrl}}"], "path":["patient","appointments"] } } },
+        { "name": "Cancel My Appointment", "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/patient/appointments/{{appointmentId1}}/cancel", "host":["{{baseUrl}}"], "path":["patient","appointments","{{appointmentId1}}","cancel"] } } },
+        { "name": "My Record", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/patient/record/me", "host":["{{baseUrl}}"], "path":["patient","record","me"] } } },
+        { "name": "My Notifications", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/patient/notifications/me", "host":["{{baseUrl}}"], "path":["patient","notifications","me"] } } }
+      ]
+    },
+    {
+      "name": "Doctor",
+      "item": [
+        {
+          "name": "Login as Doctor 1",
+          "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/auth/login", "host":["{{baseUrl}}"], "path":["auth","login"] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"doctor1@careflow.local\",\n  \"password\": \"Staff123!\"\n}" } },
+          "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.response.to.have.status(200); const j = pm.response.json(); pm.environment.set('accessToken', j.data.accessToken);"] }}]
+        },
+        {
+          "name": "My Appointments",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/doctor/appointments/me", "host":["{{baseUrl}}"], "path":["doctor","appointments","me"] } }
+        },
+        {
+          "name": "Update Appointment Status",
+          "request": { "method": "PATCH", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/doctor/appointments/{{appointmentId1}}/status", "host":["{{baseUrl}}"], "path":["doctor","appointments","{{appointmentId1}}","status"] }, "body": { "mode": "raw", "raw": "{\n  \"status\": \"completed\"\n}" } }
+        },
+        {
+          "name": "Patient Record (by patientId)",
+          "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/doctor/patients/{{patientId1}}/record", "host":["{{baseUrl}}"], "path":["doctor","patients","{{patientId1}}","record"] } }
+        },
+        {
+          "name": "Add Visit",
+          "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/doctor/patients/{{patientId1}}/visits", "host":["{{baseUrl}}"], "path":["doctor","patients","{{patientId1}}","visits"] }, "body": { "mode": "raw", "raw": "{\n  \"diagnosis\": [\"Follow-up\"],\n  \"symptoms\": [\"Fatigue\"],\n  \"treatments\": [{ \"name\": \"Vitamin D\", \"dosage\": \"1000 IU\", \"duration\": \"14 days\" }],\n  \"notes\": \"Advice hydration\"\n}" } }
+        }
+      ]
+    },
+    {
+      "name": "Nurse",
+      "item": [
+        { "name": "Login as Nurse 1", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/auth/login", "host":["{{baseUrl}}"], "path":["auth","login"] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"nurse1@careflow.local\",\n  \"password\": \"Staff123!\"\n}" } }, "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.response.to.have.status(200); const j = pm.response.json(); pm.environment.set('accessToken', j.data.accessToken);"]}}] },
+        { "name": "My Appointments", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/nurse/appointments/me", "host":["{{baseUrl}}"], "path":["nurse","appointments","me"] } } }
+      ]
+    },
+    {
+      "name": "Secretary",
+      "item": [
+        { "name": "Login as Secretary 1", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/auth/login", "host":["{{baseUrl}}"], "path":["auth","login"] }, "body": { "mode": "raw", "raw": "{\n  \"email\": \"secretary1@careflow.local\",\n  \"password\": \"Staff123!\"\n}" } }, "event": [{"listen":"test","script":{"type":"text/javascript","exec":["pm.response.to.have.status(200); const j = pm.response.json(); pm.environment.set('accessToken', j.data.accessToken);"]}}] },
+        { "name": "Create Appointment (Secretary)", "request": { "method": "POST", "header": [ {"key":"Content-Type","value":"application/json"} ], "url": { "raw": "{{baseUrl}}/secretary/appointments", "host":["{{baseUrl}}"], "path":["secretary","appointments"] }, "body": { "mode": "raw", "raw": "{\n  \"patientId\": \"{{patientId1}}\",\n  \"doctorId\": \"{{publicDoctorId}}\",\n  \"startTime\": \"{{slotStart}}\",\n  \"endTime\": \"{{slotEnd}}\",\n  \"reason\": \"Check-in\"\n}" } } }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        { "name": "Me", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/user/me", "host":["{{baseUrl}}"], "path":["user","me"] } }, "event": [{"listen":"test","script":{"type":"text/javascript","exec":[
+          "pm.response.to.have.status(200); const json = pm.response.json(); if (json.data && json.data.profile) pm.environment.set('patientId1', json.data.profile.id || json.data.profile._id);"
+        ]}}] },
+        { "name": "My Notifications", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/user/me/notifications", "host":["{{baseUrl}}"], "path":["user","me","notifications"] } } }
+      ]
+    }
+  ]
+}
+
+
