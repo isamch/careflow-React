@@ -19,6 +19,7 @@ const Sidebar = () => {
     Admin: [
       { path: '/dashboard', label: 'Overview', icon: LayoutDashboard },
       { path: '/users', label: 'Manage Users', icon: Users },
+      { path: '/admin/roles', label: 'Roles & Permissions', icon: Settings },
       { path: '/admin/settings', label: 'Settings', icon: Settings },
     ],
     Doctor: [

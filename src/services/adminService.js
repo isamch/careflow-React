@@ -25,5 +25,11 @@ export const adminService = {
   createRole: async (roleData) => {
     // roleData: { name, description, permissions: [] }
     return await request('/admin/roles', 'POST', roleData);
+  },
+
+  // Get all appointments in the system (Admin overview)
+  // GET /admin/appointments?page=1&limit=20
+  getAllAppointments: async (page = 1, limit = 20) => {
+    return await request(`/admin/appointments?page=${page}&limit=${limit}`, 'GET');
   }
 };

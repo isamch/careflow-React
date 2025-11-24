@@ -32,6 +32,9 @@ import PatientsList from '../pages/dashboard/PatientsList';
 
 // Admin Pages
 import AdminUsers from '../pages/dashboard/AdminUsers';
+import AdminRoles from '../pages/dashboard/AdminRoles';
+
+
 
 
 
@@ -89,6 +92,7 @@ const AppRoutes = () => {
           {role === ROLES.ADMIN && (
             <>
               <Route path="/users" element={<AdminUsers />} />
+              <Route path="/admin/roles" element={<AdminRoles />} />
               <Route path="/admin/settings" element={<div className="p-4">Settings</div>} />
             </>
           )}
