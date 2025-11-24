@@ -33,8 +33,20 @@ export const patientService = {
   },
 
   // Cancel an appointment
-  // PATCH /patient/appointments/:id/cancel
   cancelAppointment: async (appointmentId) => {
     return await request(`/patient/appointments/${appointmentId}/cancel`, 'PATCH');
+  },
+
+  // Update/Reschedule an appointment
+  // PUT /patient/appointments/:id
+  updateAppointment: async (id, data) => {
+    // data: { startTime, endTime, reason }
+    return await request(`/patient/appointments/${id}`, 'PUT', data);
+  },
+
+  // Get my prescriptions
+  // GET /patient/prescriptions
+  getMyPrescriptions: async () => {
+    return await request('/patient/prescriptions', 'GET');
   }
 };

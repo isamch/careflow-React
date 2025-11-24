@@ -27,6 +27,7 @@ import NewAppointment from '../pages/appointments/NewAppointment';
 import DoctorAppointments from '../pages/dashboard/DoctorAppointments';
 import PatientDetails from '../pages/dashboard/PatientDetails';
 import MyPrescriptions from '../pages/appointments/MyPrescriptions';
+import MedicalRecords from '../pages/dashboard/MedicalRecords';
 import PatientsList from '../pages/dashboard/PatientsList';
 import DoctorPatientDetails from '../pages/doctor/DoctorPatientDetails';
 import DoctorPrescriptions from '../pages/dashboard/DoctorPrescriptions';
@@ -114,6 +115,7 @@ const AppRoutes = () => {
               <Route path="/my-appointments" element={<MyAppointments />} />
               <Route path="/appointments/new" element={<NewAppointment />} />
               <Route path="/prescriptions" element={<MyPrescriptions />} />
+              <Route path="/medical-records" element={<MedicalRecords />} />
             </>
           )}
 
