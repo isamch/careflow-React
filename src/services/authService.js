@@ -42,5 +42,17 @@ export const authService = {
   getCurrentUser: async () => {
     // Requires valid token, so isAuthRequest = true (default)
     return await request('/user/me', 'GET');
+  },
+
+  // Update user profile
+  // PUT /user/me
+  updateProfile: async (data) => {
+    return await request('/user/me', 'PUT', data);
+  },
+
+  // Change password
+  // PUT /user/me/password
+  changePassword: async (currentPassword, newPassword) => {
+    return await request('/user/me/password', 'PUT', { currentPassword, newPassword });
   }
 };
