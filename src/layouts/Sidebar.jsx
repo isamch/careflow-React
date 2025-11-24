@@ -7,7 +7,8 @@ import {
   FileText,
   Activity,
   Settings,
-  LogOut
+  LogOut,
+  Pill
 } from 'lucide-react';
 
 const Sidebar = () => {
@@ -26,6 +27,8 @@ const Sidebar = () => {
       { path: '/doctor/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { path: '/doctor/appointments/me', label: 'My Appointments', icon: Calendar },
       { path: '/patients', label: 'My Patients', icon: Users },
+      { path: '/doctor/prescriptions', label: 'Prescriptions', icon: FileText },
+      { path: '/doctor/medications/available', label: 'Medications Inventory', icon: Pill },
     ],
     Patient: [
       { path: '/dashboard', label: 'Home', icon: LayoutDashboard },

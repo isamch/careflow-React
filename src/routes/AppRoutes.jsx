@@ -29,6 +29,8 @@ import PatientDetails from '../pages/dashboard/PatientDetails';
 import MyPrescriptions from '../pages/appointments/MyPrescriptions';
 import PatientsList from '../pages/dashboard/PatientsList';
 import DoctorPatientDetails from '../pages/doctor/DoctorPatientDetails';
+import DoctorPrescriptions from '../pages/dashboard/DoctorPrescriptions';
+import DoctorMedications from '../pages/dashboard/DoctorMedications';
 
 // Admin Pages
 import AdminUsers from '../pages/dashboard/AdminUsers';
@@ -99,6 +101,8 @@ const AppRoutes = () => {
               <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
               <Route path="/doctor/appointments/me" element={<DoctorAppointments />} />
               <Route path="/doctor/patients/:patientId" element={<DoctorPatientDetails />} />
+              <Route path="/doctor/prescriptions" element={<DoctorPrescriptions />} />
+              <Route path="/doctor/medications/available" element={<DoctorMedications />} />
               <Route path="/patients/:id" element={<PatientDetails />} />
               <Route path="/patients" element={<PatientsList />} />
             </>

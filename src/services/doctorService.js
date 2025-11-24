@@ -23,5 +23,33 @@ export const doctorService = {
   // POST /doctor/patients/:id/visits
   addVisit: async (patientId, visitData) => {
     return await request(`/doctor/patients/${patientId}/visits`, 'POST', visitData);
+  },
+
+  // --- Prescriptions ---
+
+  // Get all prescriptions issued by the doctor
+  // GET /doctor/prescriptions
+  getPrescriptions: async (page = 1, limit = 10) => {
+    return await request(`/doctor/prescriptions?page=${page}&limit=${limit}`, 'GET');
+  },
+
+  // Create a new prescription
+  // POST /doctor/prescriptions/send-to-pharmacy
+  createPrescription: async (prescriptionData) => {
+    return await request('/doctor/prescriptions/send-to-pharmacy', 'POST', prescriptionData);
+  },
+
+  // Get a single prescription by ID
+  // GET /doctor/prescriptions/:id
+  getPrescriptionById: async (id) => {
+    return await request(`/doctor/prescriptions/${id}`, 'GET');
+  },
+
+  // --- Medications ---
+
+  // Get all available medications
+  // GET /doctor/medications
+  getMedications: async () => {
+    return await request('/doctor/medications/available', 'GET');
   }
 };
