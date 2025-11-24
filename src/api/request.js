@@ -18,7 +18,13 @@ async function request(endpoint, method = "GET", body = null, isAuthRequest = tr
   }
 
   const config = { method, headers };
-  if (body) config.body = JSON.stringify(body);
+  if (body) {
+    config.body = JSON.stringify(body);
+    console.log(`🔵 Request [${method} ${endpoint}]:`, {
+      body: body,
+      stringified: config.body
+    });
+  }
 
   try {
     const response = await fetch(`${BASE_URL}${endpoint}`, config);
