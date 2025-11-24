@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { adminService } from '../../services/adminService';
-import { UserPlus, Users, Mail, ChevronLeft, ChevronRight, Eye, X } from 'lucide-react';
+import { UserPlus, Users, Mail, ChevronLeft, ChevronRight, Eye, X, Search } from 'lucide-react';
 import Alert from '../../components/common/Alert';
 
 const AdminUsers = () => {
@@ -26,6 +26,10 @@ const AdminUsers = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
 
+  // Search & Filter State
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterRole, setFilterRole] = useState('all');
+
   useEffect(() => {
     fetchUsers(pagination.currentPage);
   }, [pagination.currentPage]);
@@ -50,6 +54,18 @@ const AdminUsers = () => {
       setLoading(false);
     }
   };
+
+  // Filtered Users based on search and role filter
+  const filteredUsers = useMemo(() => {
+    return users.filter(user => {
+      const roleName = typeof user.role === 'object' ? user.role?.name : (user.roleName || user.role);
+      const matchesSearch = user.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesRole = filterRole === 'all' || roleName === filterRole;
+
+      return matchesSearch && matchesRole;
+    });
+  }, [users, searchTerm, filterRole]);
 
   const showNotification = (type, message) => {
     setNotification({ show: true, type, message });
@@ -148,15 +164,52 @@ const AdminUsers = () => {
         </button>
       </div>
 
+      {/* Search & Filter Bar */}
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row gap-4">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          />
+        </div>
+        <select
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+          className="px-4 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value="all">All Roles</option>
+          <option value="Admin">Admin</option>
+          <option value="Doctor">Doctor</option>
+          <option value="Patient">Patient</option>
+          <option value="Nurse">Nurse</option>
+          <option value="Secretary">Secretary</option>
+        </select>
+        {(searchTerm || filterRole !== 'all') && (
+          <button
+            onClick={() => {
+              setSearchTerm('');
+              setFilterRole('all');
+            }}
+            className="px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+          >
+            Clear Filters
+          </button>
+        )}
+      </div>
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         {loading ? (
           <div className="p-8 text-center">
             <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             <p className="mt-2 text-gray-600">Loading users...</p>
           </div>
-        ) : users.length === 0 ? (
+        ) : filteredUsers.length === 0 ? (
           <div className="p-8 text-center text-gray-500">
-            No users found. Create your first user!
+            {searchTerm || filterRole !== 'all' ? 'No users match your filters.' : 'No users found. Create your first user!'}
           </div>
         ) : (
           <>
@@ -171,7 +224,7 @@ const AdminUsers = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((u) => {
+                {filteredUsers.map((u) => {
                   const roleName = typeof u.role === 'object' ? u.role?.name : (u.roleName || u.role);
                   return (
                     <tr key={u.id} className="hover:bg-gray-50 transition-colors">
@@ -220,7 +273,7 @@ const AdminUsers = () => {
 
             <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between bg-gray-50">
               <div className="text-sm text-gray-500 hidden sm:block">
-                Showing page <span className="font-medium">{pagination.currentPage}</span> of <span className="font-medium">{pagination.totalPages}</span>
+                Showing <span className="font-medium">{filteredUsers.length}</span> of <span className="font-medium">{pagination.totalUsers}</span> users
               </div>
 
               <div className="flex items-center gap-1 mx-auto sm:mx-0">
@@ -261,11 +314,10 @@ const AdminUsers = () => {
         )}
       </div>
 
-      {/* Enhanced Profile View Modal */}
+      {/* Profile Modal - keeping existing code */}
       {showProfileModal && selectedUser && (
         <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden animate-slideUp">
-            {/* Gradient Header */}
             <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-10 relative">
               <button
                 onClick={() => setShowProfileModal(false)}
@@ -291,10 +343,8 @@ const AdminUsers = () => {
               </div>
             </div>
 
-            {/* Body */}
             <div className="p-8 overflow-y-auto max-h-[calc(90vh-250px)]">
               <div className="space-y-6">
-                {/* Account Info */}
                 <div>
                   <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <div className="h-2 w-2 rounded-full bg-blue-600"></div>
@@ -335,7 +385,6 @@ const AdminUsers = () => {
                   </div>
                 </div>
 
-                {/* Additional Info */}
                 {selectedUser.profileData && Object.keys(selectedUser.profileData).length > 0 ? (
                   <div>
                     <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -365,7 +414,6 @@ const AdminUsers = () => {
               </div>
             </div>
 
-            {/* Footer */}
             <div className="px-8 py-5 bg-gradient-to-r from-gray-50 to-blue-50 border-t border-gray-200 flex justify-end">
               <button
                 onClick={() => setShowProfileModal(false)}
@@ -378,7 +426,7 @@ const AdminUsers = () => {
         </div>
       )}
 
-      {/* Create User Modal */}
+      {/* Create User Modal - keeping existing code */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">

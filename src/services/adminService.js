@@ -14,12 +14,6 @@ export const adminService = {
     return await request('/admin/users', 'POST', userData);
   },
 
-  // Get user by ID (full profile)
-  // GET /admin/users/:id
-  getUserById: async (userId) => {
-    return await request(`/admin/users/${userId}`, 'GET');
-  },
-
   // Fetch available roles (for populating dropdowns)
   // GET /admin/roles
   getRoles: async () => {
