@@ -23,7 +23,7 @@ const Sidebar = () => {
       { path: '/admin/settings', label: 'Settings', icon: Settings },
     ],
     Doctor: [
-      { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { path: '/doctor/dashboard', label: 'Dashboard', icon: LayoutDashboard },
       { path: '/doctor/appointments/me', label: 'My Appointments', icon: Calendar },
       { path: '/patients', label: 'My Patients', icon: Users },
     ],

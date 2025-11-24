@@ -2,9 +2,9 @@ import request from '../api/request';
 
 export const doctorService = {
   // Fetch appointments for the logged-in doctor
-  // GET /doctor/appointments/me
-  getMyAppointments: async () => {
-    return await request('/doctor/appointments/me', 'GET');
+  // GET /doctor/appointments/me?page=1&limit=10
+  getMyAppointments: async (page = 1, limit = 10) => {
+    return await request(`/doctor/appointments/me?page=${page}&limit=${limit}`, 'GET');
   },
 
   // Update the status of an appointment (completed, cancelled, etc.)

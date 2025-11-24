@@ -21,7 +21,6 @@ import SecretaryDashboard from '../pages/dashboard/SecretaryDashboard';
 import Unauthorized from '../pages/shared/Unauthorized';
 import Profile from '../pages/shared/Profile';
 
-
 // Appointments & Prescriptions pages
 import MyAppointments from '../pages/appointments/MyAppointments';
 import NewAppointment from '../pages/appointments/NewAppointment';
@@ -29,14 +28,11 @@ import DoctorAppointments from '../pages/dashboard/DoctorAppointments';
 import PatientDetails from '../pages/dashboard/PatientDetails';
 import MyPrescriptions from '../pages/appointments/MyPrescriptions';
 import PatientsList from '../pages/dashboard/PatientsList';
+import DoctorPatientDetails from '../pages/doctor/DoctorPatientDetails';
 
 // Admin Pages
 import AdminUsers from '../pages/dashboard/AdminUsers';
 import AdminRoles from '../pages/dashboard/AdminRoles';
-
-
-
-
 
 // Roles Constants (Must match Backend)
 const ROLES = {
@@ -55,17 +51,17 @@ const DashboardRedirect = () => {
 
   switch (role) {
     case ROLES.ADMIN:
-      return <AdminDashboard />;
+      return <Navigate to="/admin/dashboard" replace />;
     case ROLES.DOCTOR:
-      return <DoctorDashboard />;
+      return <Navigate to="/doctor/dashboard" replace />;
     case ROLES.PATIENT:
-      return <PatientDashboard />;
+      return <Navigate to="/patient/dashboard" replace />;
     case ROLES.NURSE:
-      return <NurseDashboard />;
+      return <Navigate to="/nurse/dashboard" replace />;
     case ROLES.SECRETARY:
-      return <SecretaryDashboard />;
+      return <Navigate to="/secretary/dashboard" replace />;
     default:
-      return <PatientDashboard />;
+      return <Navigate to="/patient/dashboard" replace />;
   }
 };
 
@@ -91,6 +87,7 @@ const AppRoutes = () => {
           {/* --- Role Based Routes --- */}
           {role === ROLES.ADMIN && (
             <>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/users" element={<AdminUsers />} />
               <Route path="/admin/roles" element={<AdminRoles />} />
               <Route path="/admin/settings" element={<div className="p-4">Settings</div>} />
@@ -99,7 +96,9 @@ const AppRoutes = () => {
 
           {role === ROLES.DOCTOR && (
             <>
+              <Route path="/doctor/dashboard" element={<DoctorDashboard />} />
               <Route path="/doctor/appointments/me" element={<DoctorAppointments />} />
+              <Route path="/doctor/patients/:patientId" element={<DoctorPatientDetails />} />
               <Route path="/patients/:id" element={<PatientDetails />} />
               <Route path="/patients" element={<PatientsList />} />
             </>
@@ -107,6 +106,7 @@ const AppRoutes = () => {
 
           {role === ROLES.PATIENT && (
             <>
+              <Route path="/patient/dashboard" element={<PatientDashboard />} />
               <Route path="/my-appointments" element={<MyAppointments />} />
               <Route path="/appointments/new" element={<NewAppointment />} />
               <Route path="/prescriptions" element={<MyPrescriptions />} />
@@ -115,14 +115,13 @@ const AppRoutes = () => {
 
           {role === ROLES.NURSE && (
             <>
-              <Route path="/nurse/appointments/me" element={<NurseDashboard />} />
+              <Route path="/nurse/dashboard" element={<NurseDashboard />} />
             </>
           )}
 
           {role === ROLES.SECRETARY && (
             <>
-              <Route path="/secretary/appointments" element={<SecretaryDashboard />} />
-              <Route path="/secretary/patients" element={<SecretaryDashboard />} />
+              <Route path="/secretary/dashboard" element={<SecretaryDashboard />} />
             </>
           )}
         </Route>
