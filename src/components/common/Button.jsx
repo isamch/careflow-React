@@ -12,26 +12,28 @@ const Button = ({
   className = '',
   ...props
 }) => {
-  // Base styles
-  const baseStyles = 'font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+  // Base styles: Added shadow-sm, rounded-xl (from config), and active scale effect
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md active:scale-95';
 
-  // Variant styles
+  // Variant styles using new semantic colors
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-300',
-    secondary: 'bg-gray-200 text-gray-800 hover:bg-gray-300 focus:ring-gray-500 disabled:bg-gray-100',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-300',
-    success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 disabled:bg-green-300',
-    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500 disabled:border-blue-300 disabled:text-blue-300',
+    primary: 'bg-primary text-white hover:bg-primary-600 focus:ring-primary-500 border border-transparent',
+    secondary: 'bg-white text-text border border-gray-200 hover:bg-gray-50 hover:border-gray-300 focus:ring-gray-200',
+    accent: 'bg-secondary text-white hover:bg-secondary-600 focus:ring-secondary-500 border border-transparent', // New Accent (Teal)
+    danger: 'bg-danger text-white hover:bg-red-600 focus:ring-red-500 border border-transparent',
+    success: 'bg-success text-white hover:bg-green-600 focus:ring-green-500 border border-transparent',
+    outline: 'bg-transparent border-2 border-primary text-primary hover:bg-primary-50 focus:ring-primary-500',
+    ghost: 'bg-transparent text-primary hover:bg-primary-50 focus:ring-primary-500 shadow-none hover:shadow-none', // New Ghost variant
   };
 
   // Size styles
   const sizes = {
     sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2 text-base',
-    lg: 'px-6 py-3 text-lg',
+    md: 'px-5 py-2.5 text-sm', // Slightly larger padding for modern look
+    lg: 'px-6 py-3 text-base',
   };
 
-  const buttonClasses = `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`;
+  const buttonClasses = `${baseStyles} ${variants[variant] || variants.primary} ${sizes[size]} ${className}`;
 
   return (
     <button

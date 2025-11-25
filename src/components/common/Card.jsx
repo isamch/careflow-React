@@ -11,13 +11,13 @@ const Card = ({
 }) => {
   return (
     <div
-      className={`bg-white rounded-xl shadow-sm border border-gray-200 ${hover ? 'hover:shadow-md transition-shadow duration-200' : ''
+      className={`bg-white rounded-2xl shadow-card border border-gray-100 ${hover ? 'hover:shadow-lg transition-shadow duration-300' : ''
         } ${className}`}
     >
       {/* Card Header */}
       {title && (
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        <div className="px-6 py-5 border-b border-gray-100">
+          <h3 className="text-lg font-semibold text-primary-900">{title}</h3>
         </div>
       )}
 

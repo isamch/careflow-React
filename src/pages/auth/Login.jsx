@@ -29,7 +29,7 @@ const Login = () => {
     // Email validation
     if (!email) {
       newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
+    } else if (!/\S+@\S+\.\S/.test(email)) {
       newErrors.email = 'Email is invalid';
     }
 
@@ -82,18 +82,18 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-2xl shadow-xl">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-white to-secondary-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-3xl shadow-card border border-gray-100">
 
         {/* Header Section */}
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
-            <LogIn className="text-white" size={32} />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-50 rounded-2xl mb-4 shadow-sm">
+            <LogIn className="text-primary-600" size={32} />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900">
+          <h2 className="text-3xl font-bold text-primary-900 tracking-tight">
             Welcome Back
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-text-muted">
             Sign in to access your CareFlow account
           </p>
         </div>
@@ -109,7 +109,7 @@ const Login = () => {
 
         {/* Login Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
+          <div className="space-y-5">
             {/* Email Input */}
             <Input
               label="Email Address"
@@ -126,52 +126,51 @@ const Login = () => {
             />
 
             {/* Password Input */}
-            <Input
-              label="Password"
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (errors.password) setErrors({ ...errors, password: '' });
-              }}
-              placeholder="Enter your password"
-              error={errors.password}
-              required
-            />
+            <div>
+              <Input
+                label="Password"
+                type="password"
+                name="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (errors.password) setErrors({ ...errors, password: '' });
+                }}
+                placeholder="Enter your password"
+                error={errors.password}
+                required
+              />
+              <div className="flex justify-end mt-1">
+                <Link to="/forgot-password" class="text-xs font-medium text-primary hover:text-primary-700 transition-colors">
+                  Forgot password?
+                </Link>
+              </div>
+            </div>
           </div>
 
-          {/* Remember Me & Forgot Password */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                Remember me
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <Link to="/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
-                Forgot password?
-              </Link>
-            </div>
+          {/* Remember Me */}
+          <div className="flex items-center">
+            <input
+              id="remember-me"
+              name="remember-me"
+              type="checkbox"
+              className="h-4 w-4 text-primary focus:ring-primary-500 border-gray-300 rounded"
+            />
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-text-muted">
+              Remember me
+            </label>
           </div>
 
           {/* Submit Button */}
           <Button
             type="submit"
             variant="primary"
-            className="w-full"
+            className="w-full py-3 text-base shadow-lg shadow-primary/20 hover:shadow-primary/30"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
@@ -184,22 +183,31 @@ const Login = () => {
         </form>
 
         {/* Register Link */}
-        <div className="text-center mt-4">
-          <p className="text-sm text-gray-600">
+        <div className="text-center mt-6">
+          <p className="text-sm text-text-muted">
             Don't have an account?{' '}
-            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/register" className="font-semibold text-primary hover:text-primary-700 transition-colors">
               Register here
             </Link>
           </p>
         </div>
 
         {/* Demo Credentials (Optional - for development) */}
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-600 font-semibold mb-2">Demo Credentials:</p>
-          <div className="text-xs text-gray-500 space-y-1">
-            <p>Admin: admin@careflow.local / admin123</p>
-            <p>Doctor: doctor1@careflow.local / Staff123!</p>
-            <p>Patient: patient1@careflow.local / Patient123!</p>
+        <div className="mt-8 p-5 bg-gray-50 rounded-2xl border border-gray-100">
+          <p className="text-xs text-primary-700 font-bold uppercase tracking-wider mb-3">Demo Credentials</p>
+          <div className="grid grid-cols-1 gap-2 text-xs text-text-muted font-mono">
+            <div className="flex justify-between">
+              <span>Admin:</span>
+              <span className="text-gray-900">admin@careflow.local / admin123</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Doctor:</span>
+              <span className="text-gray-900">doctor1@careflow.local / Staff123!</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Patient:</span>
+              <span className="text-gray-900">patient1@careflow.local / Patient123!</span>
+            </div>
           </div>
         </div>
       </div>

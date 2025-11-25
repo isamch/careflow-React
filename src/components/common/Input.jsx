@@ -19,8 +19,8 @@ const Input = ({
     <div className="w-full">
       {/* Label */}
       {label && (
-        <label htmlFor={name} className="block text-sm font-medium text-gray-700 mb-1">
-          {label} {required && <span className="text-red-500">*</span>}
+        <label htmlFor={name} className="block text-sm font-medium text-text-muted mb-1.5 ml-1">
+          {label} {required && <span className="text-danger">*</span>}
         </label>
       )}
 
@@ -34,14 +34,19 @@ const Input = ({
         placeholder={placeholder}
         disabled={disabled}
         required={required}
-        className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${error ? 'border-red-500' : 'border-gray-300'
-          } ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'} ${className}`}
+        className={`w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-100 transition-all duration-200 ${error
+            ? 'border-danger focus:border-danger focus:ring-red-100'
+            : 'border-gray-200 focus:border-primary focus:ring-primary-100'
+          } ${disabled
+            ? 'bg-gray-50 text-gray-400 cursor-not-allowed'
+            : 'bg-white text-text placeholder-gray-400'
+          } ${className}`}
         {...props}
       />
 
       {/* Error Message */}
       {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
+        <p className="mt-1.5 ml-1 text-sm text-danger animate-fadeIn">{error}</p>
       )}
     </div>
   );

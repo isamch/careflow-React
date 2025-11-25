@@ -54,53 +54,58 @@ const Sidebar = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <div className="h-screen w-64 bg-slate-900 text-white flex flex-col fixed left-0 top-0 shadow-xl z-50">
+    <div className="h-screen w-64 bg-white border-r border-gray-100 flex flex-col fixed left-0 top-0 shadow-soft z-50">
       {/* Logo Area */}
-      <div className="p-6 border-b border-slate-800 flex items-center gap-2">
-        <div className="bg-blue-600 p-2 rounded-lg">
-          <Activity size={24} className="text-white" />
+      <div className="p-6 border-b border-gray-100 flex items-center gap-3">
+        <div className="bg-primary-50 p-2.5 rounded-xl">
+          <Activity size={24} className="text-primary" />
         </div>
-        <span className="text-xl font-bold tracking-wide">CareFlow</span>
+        <span className="text-xl font-bold tracking-tight text-primary-900">CareFlow</span>
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
         {links.map((link) => {
           const Icon = link.icon;
+          const active = isActive(link.path);
           return (
             <Link
               key={link.path}
               to={link.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${isActive(link.path)
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${active
+                  ? 'bg-primary-50 text-primary-700 font-semibold shadow-sm'
+                  : 'text-text-muted hover:bg-gray-50 hover:text-primary-600'
                 }`}
             >
-              <Icon size={20} />
-              <span className="font-medium">{link.label}</span>
+              <Icon
+                size={20}
+                className={`transition-colors duration-200 ${active ? 'text-primary-600' : 'text-gray-400 group-hover:text-primary-500'
+                  }`}
+              />
+              <span>{link.label}</span>
             </Link>
           );
         })}
       </nav>
 
       {/* User Profile & Logout (Bottom Section) */}
-      <div className="p-4 border-t border-slate-800 bg-slate-950">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
+      <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+        <div className="flex items-center gap-3 mb-4 p-2 rounded-xl hover:bg-white transition-colors cursor-pointer">
+          <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-700 font-bold border-2 border-white shadow-sm">
             {user?.fullName?.charAt(0) || 'U'}
           </div>
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-medium truncate">{user?.fullName}</p>
-            <p className="text-xs text-slate-500 truncate">
+            <p className="text-sm font-semibold text-gray-900 truncate">{user?.fullName}</p>
+            <p className="text-xs text-text-muted truncate">
               {typeof user?.role === 'object' ? user?.role?.name : user?.role}
             </p>
           </div>
         </div>
         <button
           onClick={logout}
-          className="w-full flex items-center justify-center gap-2 p-2 text-sm text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
+          className="w-full flex items-center justify-center gap-2 p-2.5 text-sm font-medium text-danger hover:bg-red-50 rounded-xl transition-all duration-200"
         >
-          <LogOut size={16} />
+          <LogOut size={18} />
           Sign Out
         </button>
       </div>
